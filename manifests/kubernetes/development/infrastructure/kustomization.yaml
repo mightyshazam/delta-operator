@@ -1,0 +1,4 @@
+resources:
+  - azurite
+  - localstack
+  - service.azurite.delta-operator-system.yaml

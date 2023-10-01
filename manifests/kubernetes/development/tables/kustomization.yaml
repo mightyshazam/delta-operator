@@ -1,0 +1,4 @@
+resources:
+  - deltatable.azure-emails.yaml
+  - deltatable.azure-clowns.yaml
+  - deltatable.localstack-clowns.yaml

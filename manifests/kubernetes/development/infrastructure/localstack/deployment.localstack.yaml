@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: localstack
+  name: localstack
+spec:
+  replicas: 1
+  progressDeadlineSeconds: 60
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: localstack
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: localstack
+    spec:
+      containers:
+        - image: localstack/localstack:0.13.1
+          imagePullPolicy: IfNotPresent
+          name: localstack
+          env:
+          - name: SERVICES
+            value: s3,dynamodb
+          - name: DEBUG
+            value: "1"
+          - name: DATA_DIR
+            value: /tmp/localstack/data
+          - name: DOCKER_HOST
+            value: unix:///var/run/docker.sock
+#          - name: HOST_TMP_FOLDER
+#            value: ${TMPDIR}
+          ports:
+            - containerPort: 15672
+              name: http-management
+              protocol: TCP
+            - containerPort: 4566
+              name: amqp
+              protocol: TCP
+          resources:
+            limits:
+              cpu: 300m
+              memory: 400Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30

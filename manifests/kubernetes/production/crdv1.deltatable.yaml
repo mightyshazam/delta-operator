@@ -1,0 +1,204 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: deltatables.delta-operator.rs
+spec:
+  group: delta-operator.rs
+  names:
+    categories: []
+    kind: DeltaTable
+    plural: deltatables
+    shortNames:
+    - dt
+    singular: deltatable
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns: []
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: Auto-generated derived type for DeltaTableSpec via `CustomResource`
+        properties:
+          spec:
+            properties:
+              allow_http:
+                description: Allow http uris
+                nullable: true
+                type: boolean
+              checkpoint_configuration:
+                description: Configuration for checkpoints
+                nullable: true
+                properties:
+                  commit_interval:
+                    format: int32
+                    nullable: true
+                    type: integer
+                  criteria:
+                    enum:
+                    - Time
+                    - Commit
+                    - TimeAndCommit
+                    nullable: true
+                    type: string
+                  disable:
+                    nullable: true
+                    type: boolean
+                  time_interval:
+                    nullable: true
+                    type: string
+                type: object
+              configuration:
+                description: Delta table configuration settings
+                nullable: true
+                properties:
+                  additional_settings:
+                    additionalProperties:
+                      type: string
+                    nullable: true
+                    type: object
+                  enable_change_feed:
+                    nullable: true
+                    type: boolean
+                type: object
+              name:
+                description: Name of the table
+                type: string
+              optimize_configuration:
+                description: Configuration for optimize actions
+                nullable: true
+                properties:
+                  commit_interval:
+                    format: int32
+                    nullable: true
+                    type: integer
+                  criteria:
+                    enum:
+                    - Time
+                    - Commit
+                    - TimeAndCommit
+                    nullable: true
+                    type: string
+                  disable:
+                    nullable: true
+                    type: boolean
+                  time_interval:
+                    nullable: true
+                    type: string
+                type: object
+              partition_columns:
+                description: Columns to use when partitioning the table
+                items:
+                  type: string
+                type: array
+              schema:
+                description: Serialized json of delta table schema
+                type: string
+              storage_options:
+                additionalProperties:
+                  type: string
+                description: |-
+                  Set options used to initialize storage backend
+
+                  Options may be passed in the HashMap or set as environment variables. See documentation of underlying object store implementation for details.
+
+                  - [Azure options](https://docs.rs/object_store/latest/object_store/azure/enum.AzureConfigKey.html#variants) - [S3 options](https://docs.rs/object_store/latest/object_store/aws/enum.AmazonS3ConfigKey.html#variants) - [Google options](https://docs.rs/object_store/latest/object_store/gcp/enum.GoogleConfigKey.html#variants)
+                nullable: true
+                type: object
+              storage_options_from:
+                description: Like `storage_options`, but can come from [`ConfigMap`] or [`Secret`] resources
+                items:
+                  properties:
+                    kind:
+                      enum:
+                      - ConfigMap
+                      - Secret
+                      type: string
+                    name:
+                      type: string
+                    optional:
+                      nullable: true
+                      type: boolean
+                  required:
+                  - kind
+                  - name
+                  type: object
+                nullable: true
+                type: array
+              table_uri:
+                description: Location of the table
+                type: string
+              vacuum_configuration:
+                description: Configuration for vacuum actions
+                nullable: true
+                properties:
+                  commit_interval:
+                    format: int32
+                    nullable: true
+                    type: integer
+                  criteria:
+                    enum:
+                    - Time
+                    - Commit
+                    - TimeAndCommit
+                    nullable: true
+                    type: string
+                  disable:
+                    nullable: true
+                    type: boolean
+                  retention_period:
+                    nullable: true
+                    type: string
+                  time_interval:
+                    nullable: true
+                    type: string
+                type: object
+            required:
+            - name
+            - partition_columns
+            - schema
+            - table_uri
+            type: object
+          status:
+            description: The status object of `DeltaTable`
+            nullable: true
+            properties:
+              last_checkpoint_commit:
+                format: int64
+                nullable: true
+                type: integer
+              last_checkpoint_timestamp:
+                format: int64
+                nullable: true
+                type: integer
+              last_optimize_commit:
+                format: int64
+                nullable: true
+                type: integer
+              last_optimize_timestamp:
+                format: int64
+                nullable: true
+                type: integer
+              last_vacuum_commit:
+                format: int64
+                nullable: true
+                type: integer
+              last_vacuum_timestamp:
+                format: int64
+                nullable: true
+                type: integer
+              schema:
+                type: string
+              table_uri:
+                type: string
+            required:
+            - schema
+            - table_uri
+            type: object
+        required:
+        - spec
+        title: DeltaTable
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}

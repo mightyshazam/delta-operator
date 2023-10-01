@@ -1,0 +1,42 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: delta-operator
+  namespace: delta-operator-system
+spec:
+  selector:
+    matchLabels:
+      app: delta-operator
+  template:
+    metadata:
+      labels:
+        app: delta-operator
+    spec:
+      serviceAccountName: delta-operator
+      containers:
+        - name: controller
+          args:
+            - --image
+            - ghcr.io/mightyshazam/delta-operator:v0.1.5
+            - --worker-service-account
+            - delta-operator
+          image: ghcr.io/mightyshazam/delta-operator:v0.1.5
+          imagePullPolicy: IfNotPresent
+          resources:
+            limits:
+              cpu: 100m
+              memory: 128Mi
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          env:
+            - name: RUST_LOG
+              value: error
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5

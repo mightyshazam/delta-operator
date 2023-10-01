@@ -1,0 +1,69 @@
+apiVersion: delta-operator.rs/v1alpha1
+kind: DeltaTable
+metadata:
+  name: localstack-clowns
+spec:
+  name: clowns
+  table_uri: s3://tests/clowns
+  allow_http: true
+  partition_columns:
+    - date
+  checkpoint_configuration:
+    criteria: Time
+    time_interval: 5m
+  optimize_configuration:
+    criteria: Time
+    time_interval: 24h
+  vacuum_configuration:
+    criteria: Time
+    time_interval: 24h
+  storage_options:
+    aws_s3_locking_provider: "dynamodb"
+    aws_region: us-east-2
+    aws_storage_allow_http: "true"
+    dynamo_lock_table_name: "locks"
+    dynamo_lock_owner_name: "clowns"
+    dynamo_lock_partition_key_valu: clowns_s3_tests
+    dynamo_lock_refresh_period_millis: "100"
+    dynamo_lock_additional_time_to_wait_millis: "100"
+    dynamo_lock_lease_duration: "2"
+    aws_endpoint_url: "http://localstack.default:4566"
+    aws_access_key_id: test
+    aws_secret_access_key: test
+    something: else
+  schema: |
+    {
+      "type": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": "string",
+          "nullable": true,
+          "metadata": {}
+        },
+        {
+          "name": "sender",
+          "type": "string",
+          "nullable": true,
+          "metadata": {}
+        },
+        {
+          "name": "recipient",
+          "type": "string",
+          "nullable": true,
+          "metadata": {}
+        },
+        {
+          "name": "timestamp",
+          "type": "timestamp",
+          "nullable": true,
+          "metadata": {}
+        },
+        {
+          "name": "date",
+          "type": "string",
+          "nullable": true,
+          "metadata": {}
+        }
+      ]
+    }

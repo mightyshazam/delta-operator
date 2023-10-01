@@ -1,0 +1,61 @@
+[workspace]
+
+members = [
+"controller",
+"crd",
+"worker"
+]
+
+# Enable the version 2 feature resolver, which avoids unifying features for targets that are not being built
+#
+# Critically this prevents dev-dependencies from enabling features even when not building a target that
+# uses dev-dependencies, e.g. the library crate. This in turn ensures that we can catch invalid feature
+# flag combinations that would otherwise only surface in dependent crates
+#
+# Reference - https://doc.rust-lang.org/nightly/cargo/reference/features.html#feature-resolver-version-2
+#
+resolver = "2"
+
+exclude = []
+
+[workspace.package]
+version = "0.1.0"
+homepage = "https://github.com/mightyshazam/delta-operator"
+repository = "https://github.com/mightyshazam/delta-operator"
+authors = ["KyJah Keys <kyjah@awarehq.com>"]
+license = "MIT"
+keywords = ["deltalake", "kubernetes"]
+include = [
+    "benches/*.rs",
+    "src/**/*.rs",
+    "Cargo.toml",
+]
+edition = "2021"
+rust-version = "1.62"
+
+[workspace.dependencies]
+async-trait = { version = "0.1.73" }
+axum = { version = "0.6.20", features = ["tracing"] }
+axum-prometheus = "0.4.0"
+clap = { version = "4", features = ["color", "derive", "env"] }
+delta-operator-crd = { version = "0.1.0", path = "./crd" }
+deltalake = { version = "0.15.0", features = ["azure", "s3", "datafusion" ] }
+futures = "0.3"
+k8s-openapi = { version = "0.19", default-features = false, features = [
+    "v1_23",
+] }
+kube = { version = "0.85.0", default-features = false, features = ["client", "runtime", "derive", "rustls-tls", "ws"] }
+metrics = "0.21.0"
+prometheus-client = "0.21.2"
+schemars = { version = "0.8.15" }
+serde = { version = "1.0.188", features = ["derive"] }
+serde_json = "1.0.107"
+serde_yaml = "0.9.25"
+thiserror = "1.0.44"
+tokio = { version = "1.27.0" }
+tracing = "0.1.37"
+tracing-subscriber = { version = "0.3.17", features = ["env-filter"] }
+url = "2.4.0"
+uuid = { version = "1.4.1", features= ["fast-rng"]}
+webpki = { version = "0.22.1" }
+

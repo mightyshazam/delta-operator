@@ -1,0 +1,9 @@
+commonLabels:
+  app.kubernetes.io/name: delta-operator
+
+resources:
+  - crdv1.deltatable.yaml
+  - deployment.delta-operator.yaml
+  - namespace.delta-operator-system.yaml
+  - rbac.delta-operator.yaml
+  - service.delta-operator.yaml

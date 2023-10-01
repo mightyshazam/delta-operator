@@ -1,0 +1,42 @@
+---
+# Scoped service account
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: delta-operator
+  labels:
+    app: delta-operator
+  namespace: delta-operator-system
+automountServiceAccountToken: true
+
+---
+# Access for the service account
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: delta-operator
+rules:
+  - apiGroups: ["delta-operator.rs"]
+    resources: ["deltatables", "deltatables/status"]
+    verbs: ["get", "list", "watch", "patch"]
+  - apiGroups: ["events.k8s.io"]
+    resources: ["events"]
+    verbs: ["create"]
+  - apiGroups: ["batch"]
+    resources: ["jobs"]
+    verbs: ["create", "get"]
+
+---
+# Binding the role to the account
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: delta-operator
+subjects:
+  - kind: ServiceAccount
+    namespace: delta-operator-system
+    name: delta-operator
+roleRef:
+  kind: ClusterRole
+  name: delta-operator
+  apiGroup: rbac.authorization.k8s.io

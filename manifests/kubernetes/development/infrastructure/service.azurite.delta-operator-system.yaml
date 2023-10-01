@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: azurite
+  name: azurite
+  namespace: delta-operator-system
+spec:
+  externalName: azurite.default.svc.cluster.local
+  type: ExternalName
+status:
+  loadBalancer: {}

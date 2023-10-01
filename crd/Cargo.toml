@@ -1,0 +1,41 @@
+[package]
+name = "delta-operator-crd"
+version = { workspace = true }
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[[bin]]
+doc = false
+name = "crdgen"
+path = "src/crdgen.rs"
+
+[package.metadata.docs.rs]
+all-features = true
+
+[dependencies]
+chrono = { version = "0.4.31", features = ["serde"] }
+clap = { version = "4", features = ["derive"] }
+deltalake = { workspace = true }
+futures = { workspace = true }
+k8s-openapi = { workspace = true, default-features = false, features = [
+    "v1_23",
+] }
+kube = { workspace = true, default-features = false, features = ["client", "runtime", "derive", "rustls-tls", "ws"] }
+metrics = { workspace = true }
+schemars = { workspace = true }
+serde = { version = "1.0.188", features = ["derive"] }
+serde_json = { workspace = true }
+serde_yaml = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+webpki = { workspace = true }
+
+[features]
+default = []
+azure = ["deltalake/azure"]
+# s3 = ["deltalake/s3"]
+# s3-native-tls = ["deltalake/s3-native-tls"]
+gcs = ["deltalake/gcs"]
