@@ -18,19 +18,19 @@ spec:
     criteria: Time
     time_interval: 24h
   storage_options:
-    aws_s3_locking_provider: "dynamodb"
-    aws_region: us-east-2
-    aws_storage_allow_http: "true"
-    dynamo_lock_table_name: "locks"
-    dynamo_lock_owner_name: "clowns"
-    dynamo_lock_partition_key_valu: clowns_s3_tests
-    dynamo_lock_refresh_period_millis: "100"
-    dynamo_lock_additional_time_to_wait_millis: "100"
-    dynamo_lock_lease_duration: "2"
-    aws_endpoint_url: "http://localstack.default:4566"
-    aws_access_key_id: test
-    aws_secret_access_key: test
-    something: else
+    AWS_S3_LOCKING_PROVIDER: "dynamodb"
+    AWS_REGION: us-east-2
+    AWS_STORAGE_ALLOW_HTTP: "true"
+    AWS_ENDPOINT_URL: http://localstack.default:4566
+    AWS_ACCESS_KEY_ID: test
+    AWS_SECRET_ACCESS_KEY: test
+    DYNAMO_LOCK_TABLE_NAME: "locks"
+    DYNAMO_LOCK_OWNER_NAME: "clowns"
+    DYNAMO_LOCK_PARTITION_KEY_VALUE: clowns_s3_tests
+    DYNAMO_LOCK_REFRESH_PERIOD_MILLIS: "100"
+    DYNAMO_LOCK_ADDITIONAL_TIME_TO_WAIT_MILLIS: "100"
+    DYNAMO_LOCK_LEASE_DURATION: "2"
+    something: elses
   schema: |
     {
       "type": "struct",

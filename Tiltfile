@@ -1,6 +1,3 @@
-extension_repo = "file://%s" % os.getcwd()
-v1alpha1.extension_repo(name='my-repo', url=extension_repo)
-# v1alpha1.extension(name='forwarded_service', )
 target = local(
     """
     platform=`uname -p`
@@ -51,11 +48,16 @@ docker_build(
 FROM debian:bookworm-slim
 
 WORKDIR /build
+RUN apt update \
+    && apt install -y openssl ca-certificates \
+    && apt clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 COPY delta-operator .
 ENTRYPOINT ["/build/delta-operator"]
 """,
     ignore=['.fingerprint', 'build', 'deps', 'examples', 'incremental'],
+    only=['delta-operator'],
     match_in_env_vars=True)
 docker_build(
     'docker-delta-operator-worker',
@@ -64,11 +66,16 @@ docker_build(
 FROM ubuntu
 
 WORKDIR /build
+RUN apt update \
+    && apt install -y openssl ca-certificates \
+    && apt clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 COPY delta-operator-worker .
 ENTRYPOINT ["/build/delta-operator-worker"]
 """,
     ignore=['.fingerprint', 'build', 'deps', 'examples', 'incremental'],
+    only=['delta-operator-worker'],
     match_in_env_vars=True)
 
 k8s_yaml(kustomize('manifests/kubernetes/development'))

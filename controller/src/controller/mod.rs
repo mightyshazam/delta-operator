@@ -8,7 +8,6 @@ use kube::{
         controller::Action,
         events::{Recorder, Reporter},
         finalizer,
-        watcher::Config,
         Controller,
     },
     Api, Client, Resource, ResourceExt,

@@ -74,9 +74,9 @@ jobs:
       - name: "Upload Binaries"
         uses: "taiki-e/upload-rust-binary-action@v1"
         with:
-          bin: $binary
+          bin: ${{ matrix.binary }}
           target: ${{ matrix.target }}
-          archive: $bin-${{ matrix.target }}
+          archive: ${{ matrix.binary }}-${{ matrix.target }}
           ref: refs/tags/v${{ needs.get-tag.outputs.pkg-version }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -107,22 +107,45 @@ jobs:
         with:
           images: "ghcr.io/mightyshazam/delta-operator"
 
-      - name: "Build and push Docker image"
+      - name: "Build and push Docker image (controller)"
         uses: "docker/build-push-action@v5"
         with:
           context: .
-          file: Dockerfile
+          file: docker/controller/Dockerfile
           build-args: |
             VERSION=v${{ needs.get-tag.outputs.pkg-version }}
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ghcr.io/mightyshazam/delta-operator:latest,mightyshazam/delta-operator:v${{ needs.get-tag.outputs.pkg-version }}
           labels: ${{ steps.meta.outputs.labels }}
-      - name: "Build and push Docker alpine image"
+      - name: "Build and push Docker alpine image (controller)"
         uses: "docker/build-push-action@v5"
         with:
           context: .
-          file: Dockerfile.alpine
+          file: docker/controller/Dockerfile.alpine
+          build-args: |
+            VERSION=v${{ needs.get-tag.outputs.pkg-version }}
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ghcr.io/mightyshazam/delta-operator:alpine,mightyshazam/delta-operator:v${{ needs.get-tag.outputs.pkg-version }}-alpine
+          labels: ${{ steps.meta.outputs.labels }}
+      
+      - name: "Build and push Docker image (worker)"
+        uses: "docker/build-push-action@v5"
+        with:
+          context: .
+          file: docker/worker/Dockerfile
+          build-args: |
+            VERSION=v${{ needs.get-tag.outputs.pkg-version }}
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ghcr.io/mightyshazam/delta-operator:latest,mightyshazam/delta-operator:v${{ needs.get-tag.outputs.pkg-version }}
+          labels: ${{ steps.meta.outputs.labels }}
+      - name: "Build and push Docker alpine image (worker)"
+        uses: "docker/build-push-action@v5"
+        with:
+          context: .
+          file: docker/worker/Dockerfile.alpine
           build-args: |
             VERSION=v${{ needs.get-tag.outputs.pkg-version }}
           platforms: linux/amd64,linux/arm64

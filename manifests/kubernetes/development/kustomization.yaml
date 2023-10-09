@@ -55,11 +55,3 @@ patches:
                     value: docker-delta-operator-worker
                   - name: AZURITE_BLOB_STORAGE_URL
                     value: "http://azurite:10000"
-                  - name: AWS_ALLOW_HTTP
-                    value: "true"
-                  - name: AWS_ENDPOINT_URL
-                    value: "http://localstack.default:4566"
-                  - name: AWS_ACCESS_KEY_ID
-                    value: test
-                  - name: AWS_SECRET_ACCESS_KEY
-                    value: test

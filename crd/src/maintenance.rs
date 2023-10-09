@@ -59,8 +59,8 @@ pub async fn checkpoint_table(
     doc: &DeltaTable,
     table: DeltaLakeTable,
 ) -> Result<DeltaLakeTable, Error> {
-    deltalake::action::checkpoints::create_checkpoint(&table).await?;
-    deltalake::action::checkpoints::cleanup_metadata(&table).await?;
+    deltalake::checkpoints::create_checkpoint(&table).await?;
+    deltalake::checkpoints::cleanup_metadata(&table).await?;
 
     metrics::increment_counter!(
         "checkpoint_executed_count",

@@ -9,7 +9,7 @@ use k8s_openapi::api::batch::v1::Job;
 use k8s_openapi::api::core::v1::{
     ConfigMap, Container, EnvVar, EnvVarSource, ObjectFieldSelector, PodTemplateSpec, Secret,
 };
-use k8s_openapi::apimachinery::pkg::apis::meta::v1::OwnerReference;
+
 use kube::api::{Patch, PatchParams, PostParams};
 use kube::core::{Duration, ObjectMeta};
 use kube::runtime::events::{Event, EventType, Recorder};
@@ -134,7 +134,7 @@ pub enum Error {
     #[error("Delta protocol error: {source}")]
     DeltaProtocol {
         #[from]
-        source: deltalake::action::ProtocolError,
+        source: deltalake::protocol::ProtocolError,
     },
     #[error("Missing reference {kind}/{name} for object {object}")]
     MissingReference {
