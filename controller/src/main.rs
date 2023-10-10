@@ -66,3 +66,35 @@ fn make_resource_requirements(
         }),
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::vec_to_map;
+
+    #[test]
+    fn test_vec_to_map_empty() {
+        let v = Vec::<(String, String)>::new();
+        let m = vec_to_map(v);
+        assert_eq!(0, m.len())
+    }
+
+    #[test]
+    fn test_vec_to_map_duplicates() {
+        let a = "a".to_owned();
+        let v = vec![(a.clone(), "b".to_owned()), (a.clone(), "f".to_owned())];
+        let m = vec_to_map(v);
+        assert_eq!(1, m.len());
+        let result = m.get(&a).unwrap();
+        assert_eq!("f", result)
+    }
+
+    #[test]
+    fn test_vec_to_map_simple() {
+        let v = vec![
+            ("a".to_owned(), "b".to_owned()),
+            ("e".to_owned(), "f".to_owned()),
+        ];
+        let m = vec_to_map(v);
+        assert_eq!(2, m.len())
+    }
+}

@@ -5,7 +5,7 @@ A kubernetes operator for [delta lake](https://delta.io) tables built on [delta-
 ## Quickstart and documentation
 
 ```sh
-# Apply all set of production resources defined in kustomization.yaml in `production` directory .
+# Apply the set of production resources defined in kustomization.yaml in `production` directory .
 kubectl apply -k https://github.com/mightyshazam/delta-operator/manifests/production
 ```
 
@@ -13,10 +13,10 @@ kubectl apply -k https://github.com/mightyshazam/delta-operator/manifests/produc
 apiVersion: delta-operator.rs/v1alpha1
 kind: DeltaTable
 metadata:
-  name: azure-clowns
+  name: localstack-clowns
 spec:
   name: clowns
-  table_uri: az://tests/clowns
+  table_uri: s3://tests/clowns
   allow_http: true
   partition_columns:
     - date
@@ -30,13 +30,19 @@ spec:
     criteria: Time
     time_interval: 24h
   storage_options:
-    azure_storage_allow_http: "true"
-    azure_storage_account_name: "devstoreaccount1"
-    azure_storage_account_key: "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw=="
-    azure_container_name: "tests"
-    azure_storage_use_emulator: "true"
-    azure_allow_http: "true"
-    azure_storage_connection_string: "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite.default:10000/devstoreaccount1;QueueEndpoint=http://azurite.default:10001/devstoreaccount1;"
+    AWS_S3_LOCKING_PROVIDER: "dynamodb"
+    AWS_REGION: us-east-2
+    AWS_STORAGE_ALLOW_HTTP: "true"
+    AWS_ENDPOINT_URL: http://localstack.default:4566
+    AWS_ACCESS_KEY_ID: test
+    AWS_SECRET_ACCESS_KEY: test
+    DYNAMO_LOCK_TABLE_NAME: "locks"
+    DYNAMO_LOCK_OWNER_NAME: "clowns"
+    DYNAMO_LOCK_PARTITION_KEY_VALUE: clowns_s3_tests
+    DYNAMO_LOCK_REFRESH_PERIOD_MILLIS: "100"
+    DYNAMO_LOCK_ADDITIONAL_TIME_TO_WAIT_MILLIS: "100"
+    DYNAMO_LOCK_LEASE_DURATION: "2"
+    something: elses
   schema: |
     {
       "type": "struct",

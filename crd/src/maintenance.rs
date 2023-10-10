@@ -1,9 +1,9 @@
 //! A collection of maintenance settings and functions for delta table maintenance
 use std::{collections::BTreeMap, fmt::Display};
 
-use crate::{DeltaTable, Error};
+use crate::{DeltaLakeTable, DeltaTable, Error};
 use clap::ValueEnum;
-use deltalake::{DeltaOps, DeltaTable as DeltaLakeTable};
+use deltalake::DeltaOps;
 use k8s_openapi::api::core::v1::ResourceRequirements;
 use kube::ResourceExt;
 use serde::{Deserialize, Serialize};
@@ -59,8 +59,8 @@ pub async fn checkpoint_table(
     doc: &DeltaTable,
     table: DeltaLakeTable,
 ) -> Result<DeltaLakeTable, Error> {
-    deltalake::action::checkpoints::create_checkpoint(&table).await?;
-    deltalake::action::checkpoints::cleanup_metadata(&table).await?;
+    deltalake::checkpoints::create_checkpoint(&table).await?;
+    deltalake::checkpoints::cleanup_metadata(&table).await?;
 
     metrics::increment_counter!(
         "checkpoint_executed_count",
