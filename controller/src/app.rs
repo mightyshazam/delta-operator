@@ -53,7 +53,7 @@ mod tests {
             "app",
             "--listen-address",
             "0.0.0.0:443",
-            "--namespace",
+            "--worker-namespace",
             "default",
             "--image",
             "test-image:vtest",

@@ -2,9 +2,7 @@
 //!
 //! Provides the [`maintenance`] module and [`DeltaTable`] [`CustomResource`] type
 //!
-use deltalake::{
-    DeltaConfigKey, DeltaOps, DeltaTable as DeltaLakeTable, DeltaTableBuilder, SchemaTypeStruct,
-};
+use deltalake::{DeltaConfigKey, DeltaOps, DeltaTableBuilder, SchemaTypeStruct};
 use k8s_openapi::api::batch::v1::Job;
 use k8s_openapi::api::core::v1::{
     ConfigMap, Container, EnvVar, EnvVarSource, ObjectFieldSelector, PodTemplateSpec, Secret,
@@ -25,6 +23,8 @@ use std::fmt::Display;
 use std::time::Duration as StdDuration;
 
 pub mod maintenance;
+pub type DeltaLakeTable = deltalake::DeltaTable;
+
 const AZURITE_BLOB_STORAGE_URL: &str = "AZURITE_BLOB_STORAGE_URL";
 macro_rules! compare_optional_interval {
     // match something(q,r,t,6,7,8) etc

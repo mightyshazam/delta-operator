@@ -1,9 +1,9 @@
 //! A collection of maintenance settings and functions for delta table maintenance
 use std::{collections::BTreeMap, fmt::Display};
 
-use crate::{DeltaTable, Error};
+use crate::{DeltaLakeTable, DeltaTable, Error};
 use clap::ValueEnum;
-use deltalake::{DeltaOps, DeltaTable as DeltaLakeTable};
+use deltalake::DeltaOps;
 use k8s_openapi::api::core::v1::ResourceRequirements;
 use kube::ResourceExt;
 use serde::{Deserialize, Serialize};

@@ -3,7 +3,7 @@ use clap::Parser;
 use delta_operator_crd::maintenance::{
     checkpoint_table, optimize_table, vacuum_table, Action, ENV_WORKER_POD_NAME,
 };
-use delta_operator_crd::DeltaTable;
+use delta_operator_crd::{DeltaLakeTable, DeltaTable, Error};
 use kube::api::{Patch, PatchParams};
 use kube::runtime::events::{Recorder, Reporter};
 use kube::{Api, Client, Resource};
@@ -32,11 +32,7 @@ async fn main() {
         Ok(dt) => dt,
         Err(dt) => panic!("unable to access delta table `{}`: {}", args.table, dt),
     };
-    let result = match args.action {
-        Action::Checkpoint => checkpoint_table(&table, delta_lake_table).await,
-        Action::Optimize => optimize_table(&table, delta_lake_table).await,
-        Action::Vacuum => vacuum_table(&table, delta_lake_table).await,
-    };
+    let result = perform_maintenance(&table, delta_lake_table, &args.action).await;
 
     let reporter = Reporter {
         controller: args.worker_name.as_ref().unwrap().to_owned(),
@@ -45,50 +41,7 @@ async fn main() {
 
     let recorder = Recorder::new(client, reporter, table.object_ref(&()));
     match result {
-        Ok(dt) => match args.action {
-            Action::Checkpoint => {
-                publish_success(
-                    &api,
-                    &recorder,
-                    &args,
-                    json!({
-                        "status": {
-                            "last_checkpoint_commit": dt.version(),
-                            "last_checkpoint_timestamp": chrono::Utc::now().timestamp(),
-                        }
-                    }),
-                )
-                .await
-            }
-            Action::Optimize => {
-                publish_success(
-                    &api,
-                    &recorder,
-                    &args,
-                    json!({
-                        "status": {
-                            "last_optimize_commit": dt.version(),
-                            "last_optimize_timestamp": chrono::Utc::now().timestamp(),
-                        }
-                    }),
-                )
-                .await
-            }
-            Action::Vacuum => {
-                publish_success(
-                    &api,
-                    &recorder,
-                    &args,
-                    json!({
-                        "status": {
-                            "last_vacuum_commit": dt.version(),
-                            "last_vacuum_timestamp": chrono::Utc::now().timestamp(),
-                        }
-                    }),
-                )
-                .await
-            }
-        },
+        Ok(patch_value) => publish_success(&api, &recorder, &args, patch_value).await,
         Err(err) => {
             panic!(
                 "failed to perform maintence {} on delta table `{}`: {}",
@@ -96,6 +49,39 @@ async fn main() {
             );
         }
     };
+}
+
+async fn perform_maintenance(
+    table: &DeltaTable,
+    delta_lake_table: DeltaLakeTable,
+    action: &Action,
+) -> Result<serde_json::Value, Error> {
+    match action {
+        Action::Checkpoint => checkpoint_table(table, delta_lake_table).await.map(|dt| {
+            json!({
+                "status": {
+                    "last_checkpoint_commit": dt.version(),
+                    "last_checkpoint_timestamp": chrono::Utc::now().timestamp(),
+                },
+            })
+        }),
+        Action::Optimize => optimize_table(table, delta_lake_table).await.map(|dt| {
+            json!({
+                "status": {
+                    "last_optimize_commit": dt.version(),
+                    "last_optimize_timestamp": chrono::Utc::now().timestamp(),
+                }
+            })
+        }),
+        Action::Vacuum => vacuum_table(table, delta_lake_table).await.map(|dt| {
+            json!({
+                "status": {
+                    "last_vacuum_commit": dt.version(),
+                    "last_vacuum_timestamp": chrono::Utc::now().timestamp(),
+                }
+            })
+        }),
+    }
 }
 
 async fn publish_success(
