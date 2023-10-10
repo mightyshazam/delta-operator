@@ -3,7 +3,7 @@ use std::{collections::BTreeMap, fmt::Display};
 
 use crate::{DeltaLakeTable, DeltaTable, Error};
 use clap::ValueEnum;
-use deltalake::DeltaOps;
+use deltalake::{DeltaOps, SchemaTypeStruct};
 use k8s_openapi::api::core::v1::ResourceRequirements;
 use kube::ResourceExt;
 use serde::{Deserialize, Serialize};
@@ -61,7 +61,6 @@ pub async fn checkpoint_table(
 ) -> Result<DeltaLakeTable, Error> {
     deltalake::checkpoints::create_checkpoint(&table).await?;
     deltalake::checkpoints::cleanup_metadata(&table).await?;
-
     metrics::increment_counter!(
         "checkpoint_executed_count",
         "table" => doc.name_any(),
@@ -97,4 +96,32 @@ pub async fn vacuum_table(
         "namespace" => doc.namespace().unwrap()
     );
     Ok(result)
+}
+
+/// Updates the schema [`deltalake::DeltaTable`] resource using the `schema` property of
+/// the [`DeltaTable`] provided to access it
+pub(crate) async fn update_schema(
+    doc: &DeltaTable,
+    table: DeltaLakeTable,
+) -> Result<DeltaLakeTable, Error> {
+    match doc.spec.schema_settings.manage.as_ref() {
+        Some(true) => {}
+        _ => return Ok(table),
+    };
+    let current_schema = match table.schema() {
+        Some(current_schema) => current_schema,
+        None => return Ok(table),
+    };
+
+    let schema: SchemaTypeStruct = serde_json::de::from_str(&doc.spec.schema_settings.value)?;
+    if current_schema == &schema {
+        return Ok(table);
+    }
+
+    let mut metadata = table.get_metadata()?.clone();
+    metadata.schema = schema;
+    metadata.created_time = Some(chrono::Utc::now().timestamp_millis());
+    let mut writer = deltalake::writer::JsonWriter::for_table(&table)?;
+    writer.update_schema(&metadata)?;
+    Ok(table)
 }

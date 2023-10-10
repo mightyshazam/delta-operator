@@ -18,7 +18,7 @@ spec:
         - name: controller
           args:
             - --image
-            - ghcr.io/mightyshazam/delta-operator:v0.1.5
+            - ghcr.io/mightyshazam/delta-operator-worker:v0.1.5
             - --worker-service-account
             - delta-operator
           image: ghcr.io/mightyshazam/delta-operator:v0.1.5

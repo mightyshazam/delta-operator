@@ -188,8 +188,8 @@ pub struct DeltaTableSpec {
     pub table_uri: String,
     /// Allow http uris
     pub allow_http: Option<bool>,
-    /// Serialized json of delta table schema
-    pub schema: String,
+    /// Settings for schema management
+    pub schema_settings: SchemaSettings,
     /// Columns to use when partitioning the table
     pub partition_columns: Vec<String>,
     /// Configuration for checkpoints
@@ -211,6 +211,12 @@ pub struct DeltaTableSpec {
     pub storage_options_from: Option<Vec<StorageOptionReference>>,
     /// Delta table configuration settings
     pub configuration: Option<DeltaTableConfiguration>,
+}
+
+#[derive(Deserialize, Serialize, Clone, Debug, JsonSchema, Default)]
+pub struct SchemaSettings {
+    pub value: String,
+    pub manage: Option<bool>,
 }
 
 #[derive(Deserialize, Serialize, Clone, Debug, JsonSchema)]
@@ -309,7 +315,8 @@ impl DeltaTable {
         match table.load().await {
             Ok(_) => Ok(table),
             Err(deltalake::DeltaTableError::NotATable(_)) if create_if_not_found => {
-                let schema: SchemaTypeStruct = serde_json::de::from_str(&self.spec.schema)?;
+                let schema: SchemaTypeStruct =
+                    serde_json::de::from_str(&self.spec.schema_settings.value)?;
                 let columns = schema.get_fields().to_owned();
                 Ok(DeltaOps(table)
                     .create()
@@ -363,6 +370,24 @@ impl DeltaTable {
                 return Err(e);
             }
         };
+
+        if let Some(true) = self.spec.schema_settings.manage.as_ref() {}
+
+        let table = match crate::maintenance::update_schema(self, table).await {
+            Ok(table) => table,
+            Err(e) => {
+                self.update_status_ok(
+                    &api,
+                    json!({
+                    "table_uri": "",
+                    "schema": "",
+                    "is_healthy": false,
+                        }),
+                )
+                .await;
+                return Err(e);
+            }
+        };
         if self.requires_vacuum(&table) {
             self.create_job(
                 client.clone(),
@@ -396,12 +421,16 @@ impl DeltaTable {
             .await?;
         }
 
+        let schema_string = table
+            .schema()
+            .map(|s| serde_json::to_string(&s).unwrap())
+            .unwrap_or_default();
         self.update_status_ok(
             &api,
             json!({
                         "version": table.version(),
-                        "table_uri": "",
-                        "schema": "",
+                        "table_uri": table.table_uri(),
+                        "schema": schema_string,
             "is_healthy": true,
                     }),
         )

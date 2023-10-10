@@ -43,46 +43,50 @@ spec:
     DYNAMO_LOCK_ADDITIONAL_TIME_TO_WAIT_MILLIS: "100"
     DYNAMO_LOCK_LEASE_DURATION: "2"
     something: elses
-  schema: |
-    {
-      "type": "struct",
-      "fields": [
-        {
-          "name": "id",
-          "type": "string",
-          "nullable": true,
-          "metadata": {}
-        },
-        {
-          "name": "sender",
-          "type": "string",
-          "nullable": true,
-          "metadata": {}
-        },
-        {
-          "name": "recipient",
-          "type": "string",
-          "nullable": true,
-          "metadata": {}
-        },
-        {
-          "name": "timestamp",
-          "type": "timestamp",
-          "nullable": true,
-          "metadata": {}
-        },
-        {
-          "name": "date",
-          "type": "string",
-          "nullable": true,
-          "metadata": {}
-        }
-      ]
-    }
+  schema_settings:
+    manage: false
+    value: |
+      {
+        "type": "struct",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "sender",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "recipient",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "timestamp",
+            "type": "timestamp",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "date",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          }
+        ]
+      }
 ```
 
 ## Dev Requirements
 
-1. Tilt
-2. Azure CLI
-3. AWS CLI
+1. [Tilt](https://tilt.dev)
+2. [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli)
+3. [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
+
+Run `tilt up` to get started.

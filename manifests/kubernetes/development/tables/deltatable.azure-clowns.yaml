@@ -25,39 +25,41 @@ spec:
     azure_storage_use_emulator: "true"
     azure_allow_http: "true"
     azure_storage_connection_string: "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite.default:10000/devstoreaccount1;QueueEndpoint=http://azurite.default:10001/devstoreaccount1;"
-  schema: |
-    {
-      "type": "struct",
-      "fields": [
-        {
-          "name": "id",
-          "type": "string",
-          "nullable": true,
-          "metadata": {}
-        },
-        {
-          "name": "sender",
-          "type": "string",
-          "nullable": true,
-          "metadata": {}
-        },
-        {
-          "name": "recipient",
-          "type": "string",
-          "nullable": true,
-          "metadata": {}
-        },
-        {
-          "name": "timestamp",
-          "type": "timestamp",
-          "nullable": true,
-          "metadata": {}
-        },
-        {
-          "name": "date",
-          "type": "string",
-          "nullable": true,
-          "metadata": {}
-        }
-      ]
-    }
+  schema_settings:
+    manage: true
+    value: |
+      {
+        "type": "struct",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "sender",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "recipient",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "timestamp",
+            "type": "timestamp",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "date",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          }
+        ]
+      }

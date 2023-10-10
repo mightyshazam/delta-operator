@@ -90,9 +90,17 @@ spec:
                 items:
                   type: string
                 type: array
-              schema:
-                description: Serialized json of delta table schema
-                type: string
+              schema_settings:
+                description: Settings for schema management
+                properties:
+                  manage:
+                    nullable: true
+                    type: boolean
+                  value:
+                    type: string
+                required:
+                - value
+                type: object
               storage_options:
                 additionalProperties:
                   type: string
@@ -155,13 +163,16 @@ spec:
             required:
             - name
             - partition_columns
-            - schema
+            - schema_settings
             - table_uri
             type: object
           status:
             description: The status object of `DeltaTable`
             nullable: true
             properties:
+              is_healthy:
+                nullable: true
+                type: boolean
               last_checkpoint_commit:
                 format: int64
                 nullable: true
@@ -190,6 +201,10 @@ spec:
                 type: string
               table_uri:
                 type: string
+              version:
+                format: int64
+                nullable: true
+                type: integer
             required:
             - schema
             - table_uri
