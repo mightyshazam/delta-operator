@@ -54,9 +54,6 @@ jobs:
       - "create-release"
     strategy:
       matrix:
-        binary:
-          - delta-operator
-          - delta-operator-worker
         os:
           - ubuntu-latest
         target:
@@ -72,9 +69,8 @@ jobs:
       - name: "Upload Binaries"
         uses: "taiki-e/upload-rust-binary-action@v1"
         with:
-          bin: ${{ matrix.binary }}
+          bin: delta-operator, delta-operator-worker
           target: ${{ matrix.target }}
-          archive: ${{ matrix.binary }}-${{ matrix.target }}
           ref: refs/tags/v${{ needs.get-tag.outputs.pkg-version }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
