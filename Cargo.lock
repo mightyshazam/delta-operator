@@ -1111,7 +1111,7 @@ dependencies = [
 
 [[package]]
 name = "delta-operator"
-version = "0.1.8"
+version = "0.1.9"
 dependencies = [
  "axum",
  "axum-prometheus",
@@ -1133,7 +1133,7 @@ dependencies = [
 
 [[package]]
 name = "delta-operator-crd"
-version = "0.1.8"
+version = "0.1.9"
 dependencies = [
  "chrono",
  "clap",
@@ -1154,7 +1154,7 @@ dependencies = [
 
 [[package]]
 name = "delta-operator-worker"
-version = "0.1.8"
+version = "0.1.9"
 dependencies = [
  "chrono",
  "clap",
