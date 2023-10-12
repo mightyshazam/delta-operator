@@ -69,7 +69,8 @@ jobs:
       - name: "Upload Binaries"
         uses: "taiki-e/upload-rust-binary-action@v1"
         with:
-          bin: delta-operator, delta-operator-worker
+          bin: delta-operator,delta-operator-worker
+          archive: delta-operator-${{ matrix.target }}
           target: ${{ matrix.target }}
           ref: refs/tags/v${{ needs.get-tag.outputs.pkg-version }}
           token: ${{ secrets.GITHUB_TOKEN }}
