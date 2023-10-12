@@ -19,7 +19,7 @@ resolver = "2"
 exclude = []
 
 [workspace.package]
-version = "0.1.4"
+version = "0.1.5"
 homepage = "https://github.com/mightyshazam/delta-operator"
 repository = "https://github.com/mightyshazam/delta-operator"
 authors = ["KyJah Keys <kyjah@awarehq.com>"]
