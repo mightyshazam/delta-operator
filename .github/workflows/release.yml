@@ -134,7 +134,7 @@ jobs:
             VERSION=v${{ needs.get-tag.outputs.pkg-version }}
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ghcr.io/mightyshazam/delta-operator:latest,ghcr.io/mightyshazam/delta-operator:v${{ needs.get-tag.outputs.pkg-version }}
+          tags: ghcr.io/mightyshazam/delta-operator-worker:latest,ghcr.io/mightyshazam/delta-operator-worker:v${{ needs.get-tag.outputs.pkg-version }}
           labels: ${{ steps.meta.outputs.labels }}
       - name: "Build and push Docker alpine image (worker)"
         uses: "docker/build-push-action@v5"
@@ -145,5 +145,5 @@ jobs:
             VERSION=v${{ needs.get-tag.outputs.pkg-version }}
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ghcr.io/mightyshazam/delta-operator:alpine,ghcr.io/mightyshazam/delta-operator:v${{ needs.get-tag.outputs.pkg-version }}-alpine
+          tags: ghcr.io/mightyshazam/delta-operator-worker:alpine,ghcr.io/mightyshazam/delta-operator-worker:v${{ needs.get-tag.outputs.pkg-version }}-alpine
           labels: ${{ steps.meta.outputs.labels }}
