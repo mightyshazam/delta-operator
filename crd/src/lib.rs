@@ -226,6 +226,12 @@ pub struct StorageOptionReference {
     pub optional: Option<bool>,
 }
 
+#[derive(Deserialize, Serialize, Clone, Debug, JsonSchema)]
+pub struct WorkerConfiguration {
+    pub service_account: String,
+    pub namespace: Option<String>,
+}
+
 /// Represents settings for the delta table
 /// For any properties not handled by the static properties, `additional_settings` allows
 /// adding the options as key-value pairs.

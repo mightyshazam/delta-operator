@@ -1111,7 +1111,7 @@ dependencies = [
 
 [[package]]
 name = "delta-operator"
-version = "0.1.12"
+version = "0.1.13"
 dependencies = [
  "axum",
  "axum-prometheus",
@@ -1133,7 +1133,7 @@ dependencies = [
 
 [[package]]
 name = "delta-operator-crd"
-version = "0.1.12"
+version = "0.1.13"
 dependencies = [
  "chrono",
  "clap",
@@ -1154,7 +1154,7 @@ dependencies = [
 
 [[package]]
 name = "delta-operator-worker"
-version = "0.1.12"
+version = "0.1.13"
 dependencies = [
  "chrono",
  "clap",
@@ -2494,6 +2494,7 @@ dependencies = [
  "object_store",
  "paste",
  "seq-macro",
+ "serde_json",
  "snap",
  "thrift",
  "tokio",
