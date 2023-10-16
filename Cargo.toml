@@ -48,7 +48,7 @@ kube = { version = "0.85.0", default-features = false, features = ["client", "ru
 metrics = "0.21.0"
 prometheus-client = "0.21.2"
 schemars = { version = "0.8.15" }
-serde = { version = "1.0.188", features = ["derive"] }
+serde = { version = "1.0.189", features = ["derive"] }
 serde_json = "1.0.107"
 serde_yaml = "0.9.25"
 thiserror = "1.0.49"
