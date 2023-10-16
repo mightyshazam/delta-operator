@@ -14,4 +14,4 @@ RUN apt update \
 
 COPY --from=builder /build/delta-operator-worker .
 
-CMD ["/app/delta-operator-worker"]
+ENTRYPOINT ["/app/delta-operator-worker"]

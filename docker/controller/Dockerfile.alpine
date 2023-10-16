@@ -12,4 +12,4 @@ RUN apk --no-cache add ca-certificates \
 
 COPY --from=builder /build/delta-operator .
 
-CMD ["/app/delta-operator"]
+ENTRYPOINT ["/app/delta-operator"]
