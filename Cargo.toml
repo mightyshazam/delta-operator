@@ -56,5 +56,5 @@ tokio = { version = "1.27.0" }
 tracing = "0.1.40"
 tracing-subscriber = { version = "0.3.17", features = ["env-filter"] }
 url = "2.4.0"
-uuid = { version = "1.4.1", features= ["fast-rng"]}
+uuid = { version = "1.6.1", features= ["fast-rng"]}
 
