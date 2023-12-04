@@ -502,7 +502,7 @@ impl DeltaTable {
                 secondary: None,
             })
             .await?;
-        Ok(Action::await_change())
+        Ok(Action::requeue(std::time::Duration::from_secs(3600)))
     }
 
     async fn create_job(

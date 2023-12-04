@@ -13,8 +13,6 @@ pub enum Error {
     KubeCrd { source: kube::Error },
     #[error("server error: {0}")]
     Server(String),
-    #[error("finalizer error: {0}")]
-    FinalizerError(#[source] Box<kube::runtime::finalizer::Error<Error>>),
     #[error("reconcilation failed: {source}")]
     ReconcilationError {
         #[from]

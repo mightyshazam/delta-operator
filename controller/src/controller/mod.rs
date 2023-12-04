@@ -3,11 +3,9 @@ use delta_operator_crd::{maintenance::JobSettings, DeltaTable};
 use futures::StreamExt;
 use kube::{
     api::ListParams,
-    runtime::finalizer::Event as Finalizer,
     runtime::{
         controller::Action,
         events::{Recorder, Reporter},
-        finalizer,
         Controller,
     },
     Api, Client, Resource, ResourceExt,
@@ -21,7 +19,6 @@ use crate::error::Error;
 use self::state::State;
 pub mod host;
 pub mod state;
-const DELTA_TABLE_FINALIZER: &str = "deltatables.delta-operator.rs";
 
 #[derive(Clone, Serialize)]
 pub(crate) struct Diagnostics {
@@ -92,29 +89,18 @@ fn error_policy(_: Arc<DeltaTable>, error: &Error, _: Arc<Context>) -> Action {
     Action::requeue(Duration::from_secs(5 * 60))
 }
 
-async fn reconcile(svc: Arc<DeltaTable>, ctx: Arc<Context>) -> Result<Action, Error> {
-    ctx.diagnostics.write().await.last_event = Utc::now();
-    let ns = svc.namespace().unwrap(); // doc is namespace scoped
-    let docs: Api<DeltaTable> = Api::namespaced(ctx.client.clone(), &ns);
+async fn reconcile(doc: Arc<DeltaTable>, ctx: Arc<Context>) -> Result<Action, Error> {
+    if doc.meta().deletion_timestamp.is_some() {
+        return Ok(Action::await_change());
+    }
 
-    tracing::info!("Reconciling DeltaTable \"{}\" in {}", svc.name_any(), ns);
-    finalizer(&docs, DELTA_TABLE_FINALIZER, svc, |event| async {
-        let client = ctx.client.clone();
-        match event {
-            Finalizer::Apply(doc) => {
-                let recorder = ctx.diagnostics.read().await.recorder(client.clone(), &doc);
-                doc.reconcile(client, recorder, &ctx.settings)
-                    .await
-                    .map_err(|e| Error::ReconcilationError { source: e })
-            }
-            Finalizer::Cleanup(doc) => {
-                let recorder = ctx.diagnostics.read().await.recorder(client.clone(), &doc);
-                doc.cleanup(client, recorder)
-                    .await
-                    .map_err(|e| Error::ReconcilationError { source: e })
-            }
-        }
-    })
-    .await
-    .map_err(|e| Error::FinalizerError(Box::new(e)))
+    ctx.diagnostics.write().await.last_event = Utc::now();
+    let ns = doc.namespace().unwrap(); // doc is namespace scoped
+    tracing::info!("Reconciling DeltaTable \"{}\" in {}", doc.name_any(), ns);
+    let client = ctx.client.clone();
+
+    let recorder = ctx.diagnostics.read().await.recorder(client.clone(), &doc);
+    doc.reconcile(client, recorder, &ctx.settings)
+        .await
+        .map_err(|e| Error::ReconcilationError { source: e })
 }
