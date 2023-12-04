@@ -18,10 +18,10 @@ spec:
         - name: controller
           args:
             - --image
-            - ghcr.io/mightyshazam/delta-operator-worker:v0.1.5
+            - ghcr.io/mightyshazam/delta-operator-worker:v0.1.14
             - --worker-service-account
             - delta-operator
-          image: ghcr.io/mightyshazam/delta-operator:v0.1.5
+          image: ghcr.io/mightyshazam/delta-operator:v0.1.14
           imagePullPolicy: IfNotPresent
           resources:
             limits:
