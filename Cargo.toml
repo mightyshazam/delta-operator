@@ -34,7 +34,7 @@ edition = "2021"
 rust-version = "1.62"
 
 [workspace.dependencies]
-async-trait = { version = "0.1.73" }
+async-trait = { version = "0.1.75" }
 axum = { version = "0.6.20", features = ["tracing"] }
 axum-prometheus = "0.4.0"
 clap = { version = "4", features = ["color", "derive", "env"] }
