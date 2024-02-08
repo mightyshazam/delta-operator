@@ -2,7 +2,8 @@
 //!
 //! Provides the [`maintenance`] module and [`DeltaTable`] [`CustomResource`] type
 //!
-use deltalake::{DeltaConfigKey, DeltaOps, DeltaTableBuilder, SchemaTypeStruct};
+use deltalake::datafusion::sql::sqlparser::keywords::NONE;
+use deltalake::{DeltaConfigKey, DeltaOps, DeltaTableBuilder};
 use k8s_openapi::api::batch::v1::Job;
 use k8s_openapi::api::core::v1::{
     ConfigMap, Container, EnvVar, EnvVarSource, ObjectFieldSelector, PodTemplateSpec, Secret,
@@ -24,6 +25,15 @@ use std::time::Duration as StdDuration;
 
 pub mod maintenance;
 pub type DeltaLakeTable = deltalake::DeltaTable;
+
+static START: std::sync::Once = std::sync::Once::new();
+pub fn initialize_handlers() {
+    START.call_once(|| {
+        deltalake::aws::register_handlers(None);
+        deltalake::gcp::register_handlers(None);
+        deltalake::azure::register_handlers(None);
+    })
+}
 
 const AZURITE_BLOB_STORAGE_URL: &str = "AZURITE_BLOB_STORAGE_URL";
 macro_rules! compare_optional_interval {
@@ -146,6 +156,11 @@ pub enum Error {
     SchemaJson {
         #[from]
         source: serde_json::Error,
+    },
+    #[error("Arrow error: {source}")]
+    Arrow {
+        #[from]
+        source: deltalake::arrow::error::ArrowError,
     },
 }
 
@@ -321,9 +336,9 @@ impl DeltaTable {
         match table.load().await {
             Ok(_) => Ok(table),
             Err(deltalake::DeltaTableError::NotATable(_)) if create_if_not_found => {
-                let schema: SchemaTypeStruct =
+                let schema: deltalake::kernel::Schema =
                     serde_json::de::from_str(&self.spec.schema_settings.value)?;
-                let columns = schema.get_fields().to_owned();
+                let columns = schema.fields;
                 Ok(DeltaOps(table)
                     .create()
                     .with_table_name(self.spec.name.clone())

@@ -11,6 +11,7 @@ mod controller;
 mod error;
 #[tokio::main]
 async fn main() {
+    delta_operator_crd::initialize_handlers();
     let Arguments {
         listen_address,
         image,
