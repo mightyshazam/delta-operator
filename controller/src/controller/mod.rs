@@ -102,5 +102,5 @@ async fn reconcile(doc: Arc<DeltaTable>, ctx: Arc<Context>) -> Result<Action, Er
     let recorder = ctx.diagnostics.read().await.recorder(client.clone(), &doc);
     doc.reconcile(client, recorder, &ctx.settings)
         .await
-        .map_err(|e| Error::ReconcilationError { source: e })
+        .map_err(|e| Error::Reconcilation { source: e })
 }

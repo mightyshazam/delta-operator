@@ -14,7 +14,7 @@ pub enum Error {
     #[error("server error: {0}")]
     Server(String),
     #[error("reconcilation failed: {source}")]
-    ReconcilationError {
+    Reconcilation {
         #[from]
         source: delta_operator_crd::Error,
     },

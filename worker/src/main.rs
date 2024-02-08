@@ -12,6 +12,7 @@ mod app;
 
 #[tokio::main]
 async fn main() {
+    delta_operator_crd::initialize_handlers();
     let pod_name =
         std::env::var(ENV_WORKER_POD_NAME).unwrap_or(app::DEFAULT_WORKER_NAME.to_owned());
     let args = app::Arguments::parse();

@@ -1,9 +1,14 @@
 //! A collection of maintenance settings and functions for delta table maintenance
-use std::{collections::BTreeMap, fmt::Display};
+use std::{collections::BTreeMap, fmt::Display, sync::Arc, time::Duration};
 
 use crate::{DeltaLakeTable, DeltaTable, Error};
 use clap::ValueEnum;
-use deltalake::{DeltaOps, SchemaTypeStruct};
+use deltalake::{
+    arrow::record_batch::RecordBatch,
+    kernel::Schema,
+    writer::{DeltaWriter, RecordBatchWriter},
+    DeltaOps,
+};
 use k8s_openapi::api::core::v1::ResourceRequirements;
 use kube::ResourceExt;
 use serde::{Deserialize, Serialize};
@@ -18,6 +23,7 @@ pub struct JobSettings {
     pub annotations: BTreeMap<String, String>,
     pub service_account: String,
     pub resource_requirements: Option<ResourceRequirements>,
+    pub resync_interval: Option<Duration>,
 }
 
 /// Action options for maintenance
@@ -113,15 +119,15 @@ pub(crate) async fn update_schema(
         None => return Ok(table),
     };
 
-    let schema: SchemaTypeStruct = serde_json::de::from_str(&doc.spec.schema_settings.value)?;
+    let schema: Schema = serde_json::de::from_str(&doc.spec.schema_settings.value)?;
     if current_schema == &schema {
         return Ok(table);
     }
-
-    let mut metadata = table.get_metadata()?.clone();
-    metadata.schema = schema;
-    metadata.created_time = Some(chrono::Utc::now().timestamp_millis());
-    let mut writer = deltalake::writer::JsonWriter::for_table(&table)?;
-    writer.update_schema(&metadata)?;
+    let mut writer = RecordBatchWriter::for_table(&table)?;
+    let arrow_schema = deltalake::arrow::datatypes::Schema::try_from(&schema)?;
+    let record_batch = RecordBatch::new_empty(Arc::new(arrow_schema));
+    writer
+        .write_with_mode(record_batch, deltalake::writer::WriteMode::MergeSchema)
+        .await?;
     Ok(table)
 }
