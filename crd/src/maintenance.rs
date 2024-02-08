@@ -1,5 +1,5 @@
 //! A collection of maintenance settings and functions for delta table maintenance
-use std::{collections::BTreeMap, fmt::Display};
+use std::{collections::BTreeMap, fmt::Display, time::Duration};
 
 use crate::{DeltaLakeTable, DeltaTable, Error};
 use clap::ValueEnum;
@@ -18,6 +18,7 @@ pub struct JobSettings {
     pub annotations: BTreeMap<String, String>,
     pub service_account: String,
     pub resource_requirements: Option<ResourceRequirements>,
+    pub resync_interval: Option<Duration>,
 }
 
 /// Action options for maintenance

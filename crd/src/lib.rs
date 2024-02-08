@@ -441,7 +441,9 @@ impl DeltaTable {
                     }),
         )
         .await;
-        Ok(Action::await_change())
+        Ok(settings
+            .resync_interval
+            .map_or(Action::await_change(), Action::requeue))
     }
 
     async fn update_status_ok(&self, api: &Api<DeltaTable>, value: serde_json::value::Value) {
@@ -518,15 +520,6 @@ impl DeltaTable {
             dry_run: false,
             field_manager: None,
         };
-        /*let object_ref = self.object_ref(&());
-        let owner = OwnerReference {
-            api_version: object_ref.api_version.unwrap_or_default(),
-            block_owner_deletion: Some(true),
-            controller: Some(false),
-            kind: object_ref.kind.unwrap_or_default(),
-            name: object_ref.name.unwrap_or_default(),
-            uid: object_ref.uid.unwrap_or_default(),
-        };*/
         let mut env = vec![EnvVar {
             name: maintenance::ENV_WORKER_POD_NAME.into(),
             value: None,

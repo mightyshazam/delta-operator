@@ -39,7 +39,7 @@ axum = { version = "0.6.20", features = ["tracing"] }
 axum-prometheus = "0.4.0"
 clap = { version = "4", features = ["color", "derive", "env"] }
 delta-operator-crd = { version = "0.1.0", path = "./crd" }
-deltalake = { version = "0.16.5", features = ["azure", "s3", "datafusion", "gcs", "json" ] }
+deltalake = { version = "0.17.0", features = ["azure", "s3", "datafusion", "gcs", "json" ] }
 futures = "0.3"
 k8s-openapi = { version = "0.19", default-features = false, features = [
     "v1_23",

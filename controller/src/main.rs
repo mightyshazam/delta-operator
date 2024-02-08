@@ -21,6 +21,7 @@ async fn main() {
         worker_max_ram,
         worker_namespace,
         label_selector,
+        resync_interval,
     } = app::Arguments::parse();
     let settings = JobSettings {
         image,
@@ -29,6 +30,7 @@ async fn main() {
         service_account: worker_service_account,
         resource_requirements: make_resource_requirements(worker_max_cpu, worker_max_ram),
         namespace: worker_namespace,
+        resync_interval: Some(resync_interval),
     };
 
     let state = controller::state::State::new(settings, label_selector);
