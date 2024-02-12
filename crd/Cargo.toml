@@ -14,7 +14,7 @@ path = "src/crdgen.rs"
 all-features = true
 
 [dependencies]
-chrono = { version = "0.4.31", features = ["serde"] }
+chrono = { version = "0.4.34", features = ["serde"] }
 clap = { version = "4", features = ["derive"] }
 deltalake = { workspace = true }
 futures = { workspace = true }
